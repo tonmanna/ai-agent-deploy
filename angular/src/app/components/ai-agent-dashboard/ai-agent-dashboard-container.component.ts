@@ -12,42 +12,13 @@ import {
   NewCollection,
   Document
 } from './types';
-import { AiAgentDashboardPresentationComponent } from './ai-agent-dashboard-presentation.component';
+import { AiAgentDashboardPresentationV2Component } from './ai-agent-dashboard-presentation-v2.component';
 
 @Component({
   selector: 'app-ai-agent-dashboard-container',
   standalone: true,
-  imports: [CommonModule, AiAgentDashboardPresentationComponent],
-  template: `
-    <app-ai-agent-dashboard-presentation
-      [dashboardData]="dashboardData"
-      [modalStates]="modalStates"
-      [editingStates]="editingStates"
-      (viewChange)="onViewChange($event)"
-      (openCreateModal)="onOpenCreateModal($event)"
-      (createAgent)="onCreateAgent()"
-      (toggleCollection)="onToggleCollection($event)"
-      (deleteAgent)="onDeleteAgent($event)"
-      (editAgent)="onEditAgent($event)"
-      (editPrompt)="onEditPrompt($event)"
-      (createCollection)="onCreateCollection()"
-      (viewCollection)="onViewCollection($event)"
-      (editCollection)="onEditCollection($event)"
-      (deleteCollection)="onDeleteCollection($event)"
-      (fileUpload)="onFileUpload($event)"
-      (deleteDocument)="onDeleteDocument($event)"
-      (closeModal)="onCloseModal($event)"
-      (saveEditAgent)="onSaveEditAgent()"
-      (saveEditCollection)="onSaveEditCollection()"
-      (savePrompt)="onSavePrompt()"
-      (confirmDelete)="onConfirmDelete($event)"
-      (updateNewAgent)="onUpdateNewAgent($event)"
-      (updateNewCollection)="onUpdateNewCollection($event)"
-      (updateEditingCollection)="onUpdateEditingCollection($event)"
-      (updatePromptText)="onUpdatePromptText($event)"
-    >
-    </app-ai-agent-dashboard-presentation>
-  `
+  imports: [CommonModule, AiAgentDashboardPresentationV2Component],
+  templateUrl: './ai-agent-dashboard-container.component.html'
 })
 export class AiAgentDashboardContainerComponent implements OnInit {
   dashboardData: DashboardData = {
@@ -336,8 +307,15 @@ export class AiAgentDashboardContainerComponent implements OnInit {
     }
   }
 
-  onUpdateNewAgent(updates: Partial<NewAgent>): void {
-    this.editingStates.newAgent = { ...this.editingStates.newAgent, ...updates };
+  onUpdateNewAgent(updates: Partial<NewAgent> | {field: keyof NewAgent, value: any}): void {
+    if ('field' in updates) {
+      this.editingStates.newAgent = { 
+        ...this.editingStates.newAgent, 
+        [updates.field]: updates.value 
+      };
+    } else {
+      this.editingStates.newAgent = { ...this.editingStates.newAgent, ...updates };
+    }
   }
 
   onUpdateNewCollection(updates: Partial<NewCollection>): void {

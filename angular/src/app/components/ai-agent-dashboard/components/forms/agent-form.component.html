@@ -1,0 +1,102 @@
+<div class="space-y-4">
+  <!-- Agent Name -->
+  <div>
+    <label class="block text-sm font-medium text-gray-700 mb-1">
+      Sub-Agent Name
+    </label>
+    <input
+      type="text"
+      [ngModel]="agent.name"
+      (ngModelChange)="onUpdateAgent('name', $event)"
+      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+      placeholder="e.g., HR Assistant"
+      [class.border-red-300]="showValidation && !agent.name"
+    />
+    <p *ngIf="showValidation && !agent.name" class="mt-1 text-sm text-red-600">
+      Agent name is required
+    </p>
+  </div>
+
+  <!-- Agent Type Display -->
+  <div *ngIf="agent.type" class="bg-blue-50 rounded-lg p-3">
+    <p class="text-sm text-blue-800">
+      <span class="font-medium">Agent Type:</span> 
+      {{agent.type === 'internal' ? 'Internal Agent' : 'Customer Agent'}}
+    </p>
+  </div>
+
+  <!-- Collection Selection -->
+  <div>
+    <label class="block text-sm font-medium text-gray-700 mb-1">
+      Select Collections
+    </label>
+    <p class="text-xs text-gray-500 mb-3">
+      Choose the knowledge bases this agent will have access to
+    </p>
+    
+    <div class="border border-gray-300 rounded-lg max-h-48 overflow-y-auto"
+         [class.border-red-300]="showValidation && selectedCollections.length === 0">
+      <div *ngIf="collections.length === 0" class="p-4 text-center text-gray-500 text-sm">
+        No collections available
+      </div>
+      
+      <label
+        *ngFor="let collection of collections; trackBy: trackByCollectionId"
+        class="flex items-center p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0 transition-colors"
+      >
+        <input
+          type="checkbox"
+          [checked]="isCollectionSelected(collection.id)"
+          (change)="onToggleCollection(collection.id)"
+          class="mr-3 h-4 w-4 text-blue-600 rounded focus:ring-blue-500 focus:ring-2"
+        />
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-gray-900 truncate">{{collection.name}}</p>
+          <p class="text-xs text-gray-600 mt-0.5 line-clamp-1">{{collection.detail}}</p>
+          <p class="text-xs text-gray-500 mt-0.5">
+            {{collection.documents.length}} document{{collection.documents.length !== 1 ? 's' : ''}}
+          </p>
+        </div>
+        
+        <!-- Collection Status -->
+        <div class="flex-shrink-0 ml-2">
+          <span class="inline-block w-2 h-2 bg-green-400 rounded-full" title="Active"></span>
+        </div>
+      </label>
+    </div>
+    
+    <!-- Selection Summary -->
+    <div class="mt-2 flex items-center justify-between text-sm">
+      <span class="text-gray-500">
+        Selected: {{selectedCollections.length}} collection{{selectedCollections.length !== 1 ? 's' : ''}}
+      </span>
+      <button
+        *ngIf="selectedCollections.length > 0"
+        (click)="onClearSelection()"
+        class="text-blue-600 hover:text-blue-800 text-xs underline"
+        type="button"
+      >
+        Clear all
+      </button>
+    </div>
+    
+    <p *ngIf="showValidation && selectedCollections.length === 0" class="mt-1 text-sm text-red-600">
+      At least one collection must be selected
+    </p>
+  </div>
+
+  <!-- Quick Stats -->
+  <div *ngIf="selectedCollections.length > 0" class="bg-gray-50 rounded-lg p-3">
+    <h4 class="text-sm font-medium text-gray-700 mb-2">Selected Collections Summary</h4>
+    <div class="grid grid-cols-2 gap-4 text-xs text-gray-600">
+      <div>
+        <span class="font-medium">Total Documents:</span>
+        {{getTotalDocuments()}}
+      </div>
+      <div>
+        <span class="font-medium">Collection Types:</span>
+        {{getSelectedCollectionNames().length}} unique
+      </div>
+    </div>
+  </div>
+</div>

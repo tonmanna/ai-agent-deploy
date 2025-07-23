@@ -1,0 +1,21 @@
+<app-ai-agent-dashboard-presentation-v2
+  [dashboardData]="dashboardData"
+  [modalStates]="modalStates"
+  [editingStates]="editingStates"
+  (viewChange)="onViewChange($event)"
+  (openCreateModal)="onOpenCreateModal($event)"
+  (createAgent)="onCreateAgent()"
+  (toggleCollection)="onToggleCollection($event)"
+  (deleteAgent)="onDeleteAgent($event)"
+  (editAgent)="onEditAgent($event)"
+  (editPrompt)="onEditPrompt($event)"
+  (createCollection)="onCreateCollection()"
+  (viewCollection)="onViewCollection($event)"
+  (editCollection)="onEditCollection($event)"
+  (deleteCollection)="onDeleteCollection($event)"
+  (closeModal)="onCloseModal($event)"
+  (saveEditAgent)="onSaveEditAgent()"
+  (confirmDelete)="onConfirmDelete($event)"
+  (updateNewAgent)="onUpdateNewAgent($event)"
+>
+</app-ai-agent-dashboard-presentation-v2>

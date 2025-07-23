@@ -1,0 +1,15 @@
+.group:hover .agent-actions {
+  opacity: 1;
+}
+
+.status-active {
+  @apply bg-green-100 text-green-700;
+}
+
+.status-inactive {
+  @apply bg-yellow-100 text-yellow-700;
+}
+
+.status-error {
+  @apply bg-red-100 text-red-700;
+}

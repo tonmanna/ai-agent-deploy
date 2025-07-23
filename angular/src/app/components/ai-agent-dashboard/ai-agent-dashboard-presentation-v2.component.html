@@ -1,0 +1,194 @@
+<div class="h-screen bg-gray-50 flex flex-col">
+  <!-- Top Navigation -->
+  <div class="bg-white border-b border-gray-200">
+    <div class="px-8 py-4">
+      <h1 class="text-2xl font-bold text-gray-900 mb-4">AI Agent Admin</h1>
+      <nav class="flex items-center space-x-2">
+        <button
+          (click)="onViewChange('dashboard')"
+          [class]="getNavButtonClass('dashboard')"
+        >
+          🌿 AI Agents
+        </button>
+        <span class="w-4 h-4 text-gray-400">▶</span>
+        <button
+          (click)="onViewChange('collections')"
+          [class]="getNavButtonClass('collections')"
+        >
+          🗄️ Collections
+        </button>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="flex-1 overflow-auto">
+    <!-- Header -->
+    <div class="bg-white border-b border-gray-200 px-8 py-6">
+      <div class="flex items-center justify-between">
+        <h2 class="text-2xl font-semibold text-gray-900">
+          {{getPageTitle()}}
+        </h2>
+        <button
+          *ngIf="dashboardData.activeView === 'collections'"
+          (click)="modalStates.showCreateCollectionModal = true"
+          class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          ➕ Create Collection
+        </button>
+      </div>
+    </div>
+
+    <!-- Dashboard View - Organization Chart -->
+    <div *ngIf="dashboardData.activeView === 'dashboard'" class="p-8">
+      <div class="max-w-6xl mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <!-- Internal Agent Section -->
+          <div>
+            <div class="bg-blue-600 text-white rounded-lg p-6 mb-6 relative group">
+              <button
+                (click)="onEditPrompt(dashboardData.agents.internal, true)"
+                class="absolute top-4 right-4 text-blue-200 hover:text-white transition-colors opacity-0 group-hover:opacity-100"
+                title="Edit Prompt"
+              >
+                ✏️
+              </button>
+              <div class="flex items-center">
+                <span class="text-2xl mr-3">👤</span>
+                <div>
+                  <h3 class="text-xl font-semibold">{{dashboardData.agents.internal.name}}</h3>
+                  <p class="text-blue-100">Primary Agent (Router)</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="relative mb-4">
+              <div class="absolute left-1/2 transform -translate-x-1/2 w-0.5 h-8 bg-gray-300"></div>
+            </div>
+            
+            <div class="space-y-3">
+              <app-agent-card
+                *ngFor="let agent of dashboardData.agents.internal.subAgents; trackBy: trackByAgentId"
+                [agent]="agent"
+                [collections]="dashboardData.collections"
+                (edit)="onEditAgent($event)"
+                (delete)="onDeleteAgent($event)"
+                (editPrompt)="onEditPrompt($event)"
+              ></app-agent-card>
+              
+              <button
+                (click)="onOpenCreateModal('internal')"
+                class="w-full border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-blue-400 hover:bg-blue-50 transition-colors flex items-center justify-center text-gray-600 hover:text-blue-600"
+              >
+                ➕ Add Sub-Agent
+              </button>
+            </div>
+          </div>
+
+          <!-- Customer Agent Section -->
+          <div>
+            <div class="bg-green-600 text-white rounded-lg p-6 mb-6 relative group">
+              <button
+                (click)="onEditPrompt(dashboardData.agents.customer, true)"
+                class="absolute top-4 right-4 text-green-200 hover:text-white transition-colors opacity-0 group-hover:opacity-100"
+                title="Edit Prompt"
+              >
+                ✏️
+              </button>
+              <div class="flex items-center">
+                <span class="text-2xl mr-3">👥</span>
+                <div>
+                  <h3 class="text-xl font-semibold">{{dashboardData.agents.customer.name}}</h3>
+                  <p class="text-green-100">Primary Agent (Router)</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="relative mb-4">
+              <div class="absolute left-1/2 transform -translate-x-1/2 w-0.5 h-8 bg-gray-300"></div>
+            </div>
+            
+            <div class="space-y-3">
+              <app-agent-card
+                *ngFor="let agent of dashboardData.agents.customer.subAgents; trackBy: trackByAgentId"
+                [agent]="agent"
+                [collections]="dashboardData.collections"
+                (edit)="onEditAgent($event)"
+                (delete)="onDeleteAgent($event)"
+                (editPrompt)="onEditPrompt($event)"
+              ></app-agent-card>
+              
+              <button
+                (click)="onOpenCreateModal('customer')"
+                class="w-full border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-green-400 hover:bg-green-50 transition-colors flex items-center justify-center text-gray-600 hover:text-green-600"
+              >
+                ➕ Add Sub-Agent
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Collections View -->
+    <div *ngIf="dashboardData.activeView === 'collections'" class="p-8">
+      <div class="grid gap-4 max-w-4xl">
+        <app-collection-card
+          *ngFor="let collection of dashboardData.collections; trackBy: trackByCollectionId"
+          [collection]="collection"
+          (view)="onViewCollection($event)"
+          (edit)="onEditCollection($event)"
+          (delete)="onDeleteCollection($event)"
+        ></app-collection-card>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Agent Modal -->
+  <app-modal-base
+    *ngIf="modalStates.showCreateModal"
+    [title]="'Create New Sub-Agent' + (editingStates.newAgent.type ? ' for ' + (editingStates.newAgent.type === 'internal' ? 'Internal Agent' : 'Customer Agent') : '')"
+    size="md"
+    primaryActionText="Create Agent"
+    [primaryActionDisabled]="!canCreateAgent()"
+    (close)="onCloseModal('create')"
+    (cancel)="onCloseModal('create')"
+    (primaryAction)="onCreateAgent()"
+  >
+    <app-agent-form
+      [agent]="editingStates.newAgent"
+      [collections]="dashboardData.collections"
+      [selectedCollections]="editingStates.selectedCollections"
+      [showValidation]="false"
+      (updateAgent)="onUpdateNewAgent($event.field, $event.value)"
+      (toggleCollection)="onToggleCollection($event)"
+      (clearSelection)="onClearCollectionSelection()"
+    ></app-agent-form>
+  </app-modal-base>
+
+  <!-- Edit Agent Modal -->
+  <app-edit-agent-modal
+    *ngIf="modalStates.showEditAgentModal && editingStates.editingAgent"
+    [agent]="editingStates.editingAgent"
+    [collections]="dashboardData.collections"
+    [selectedCollections]="editingStates.selectedCollections"
+    (close)="onCloseModal('editAgent')"
+    (save)="onSaveEditAgent()"
+    (toggleCollection)="onToggleCollection($event)"
+    (editPrompt)="onCloseModal('editAgent'); onEditPrompt(editingStates.editingAgent)"
+  ></app-edit-agent-modal>
+
+  <!-- Delete Agent Modal -->
+  <app-delete-confirmation-modal
+    *ngIf="modalStates.showDeleteModal && editingStates.agentToDelete"
+    title="Delete Sub-Agent"
+    [itemName]="editingStates.agentToDelete.name"
+    description="This action cannot be undone. The agent and all its configurations will be permanently removed."
+    [additionalWarningMessage]="'This sub-agent has ' + editingStates.agentToDelete.collections.length + ' collection(s) attached. These collections will remain available for other agents.'"
+    confirmText="Delete Agent"
+    (close)="onCloseModal('delete')"
+    (confirm)="onConfirmDelete('agent')"
+  ></app-delete-confirmation-modal>
+
+  <!-- Other modals would go here... -->
+</div>

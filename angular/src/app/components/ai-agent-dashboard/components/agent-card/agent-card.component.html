@@ -1,0 +1,69 @@
+<div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-300 relative group">
+  <!-- Default Agent Badge -->
+  <div *ngIf="agent.isDefault" 
+       class="absolute -top-2 -right-2 bg-blue-500 text-white p-1 rounded-full animate-pulse" 
+       title="Default Agent">
+    <span class="text-xs">🛡️</span>
+  </div>
+  
+  <!-- Agent Header -->
+  <div class="flex items-center justify-between mb-2">
+    <h4 class="font-medium text-gray-900">{{agent.name}}</h4>
+    
+    <!-- Action Buttons -->
+    <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+      <button
+        (click)="onEditPrompt()"
+        class="text-gray-400 hover:text-blue-600 transition-colors p-1 rounded hover:bg-blue-50"
+        title="Edit Prompt"
+      >
+        <span class="text-sm">✏️</span>
+      </button>
+      <button
+        (click)="onEdit()"
+        class="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded hover:bg-gray-50"
+        title="Edit Agent"
+      >
+        <span class="text-sm">⚙️</span>
+      </button>
+      <button
+        *ngIf="!agent.isDefault"
+        (click)="onDelete()"
+        class="text-gray-400 hover:text-red-600 transition-colors p-1 rounded hover:bg-red-50"
+        title="Delete Agent"
+      >
+        <span class="text-sm">🗑️</span>
+      </button>
+      
+      <!-- Status Badge -->
+      <span class="px-2 py-1 text-xs rounded-full"
+            [class]="getStatusClass(agent.status)">
+        {{agent.status}}
+      </span>
+    </div>
+  </div>
+  
+  <!-- Agent Details -->
+  <div class="text-sm text-gray-600 space-y-2">
+    <p class="flex items-center justify-between">
+      <span>Collections:</span>
+      <span class="font-medium">{{agent.collections.length}}</span>
+    </p>
+    
+    <!-- Collection Tags -->
+    <div class="flex flex-wrap gap-1" *ngIf="agent.collections.length > 0">
+      <span 
+        *ngFor="let colId of agent.collections; trackBy: trackByCollectionId" 
+        class="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-xs hover:bg-gray-200 transition-colors cursor-default"
+        [title]="getCollectionName(colId)"
+      >
+        {{getCollectionName(colId) | slice:0:20}}{{getCollectionName(colId).length > 20 ? '...' : ''}}
+      </span>
+    </div>
+    
+    <!-- No Collections Message -->
+    <div *ngIf="agent.collections.length === 0" class="text-gray-400 italic text-xs">
+      No collections assigned
+    </div>
+  </div>
+</div>

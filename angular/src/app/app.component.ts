@@ -6,17 +6,8 @@ import { AiAgentDashboardContainerComponent } from './components/ai-agent-dashbo
   selector: 'app-root',
   standalone: true,
   imports: [CommonModule, AiAgentDashboardContainerComponent],
-  template: `
-    <div class="app-container">
-      <app-ai-agent-dashboard-container></app-ai-agent-dashboard-container>
-    </div>
-  `,
-  styles: [`
-    .app-container {
-      min-height: 100vh;
-      width: 100%;
-    }
-  `]
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
   title = 'AI Agent Dashboard';
