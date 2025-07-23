@@ -1,0 +1,797 @@
+<div class="h-screen bg-gray-50 flex flex-col">
+  <!-- Top Navigation -->
+  <div class="bg-white border-b border-gray-200">
+    <div class="px-8 py-4">
+      <h1 class="text-2xl font-bold text-gray-900 mb-4">AI Agent Admin</h1>
+      <nav class="flex items-center space-x-2">
+        <button
+          (click)="onViewChange('dashboard')"
+          [class]="'px-4 py-2 rounded-lg transition-colors flex items-center ' + 
+            (dashboardData.activeView === 'dashboard' 
+              ? 'bg-blue-50 text-blue-700' 
+              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100')"
+        >
+          🌿 AI Agents
+        </button>
+        <span class="w-4 h-4 text-gray-400">▶</span>
+        <button
+          (click)="onViewChange('collections')"
+          [class]="'px-4 py-2 rounded-lg transition-colors flex items-center ' + 
+            (dashboardData.activeView === 'collections' 
+              ? 'bg-blue-50 text-blue-700' 
+              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100')"
+        >
+          🗄️ Collections
+        </button>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="flex-1 overflow-auto">
+    <!-- Header -->
+    <div class="bg-white border-b border-gray-200 px-8 py-6">
+      <div class="flex items-center justify-between">
+        <h2 class="text-2xl font-semibold text-gray-900">
+          <span *ngIf="dashboardData.activeView === 'dashboard'">Agent Organization Chart</span>
+          <span *ngIf="dashboardData.activeView === 'collections'">Collection Management</span>
+        </h2>
+        <button
+          *ngIf="dashboardData.activeView === 'collections'"
+          (click)="modalStates.showCreateCollectionModal = true"
+          class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          ➕ Create Collection
+        </button>
+      </div>
+    </div>
+
+    <!-- Dashboard View - Organization Chart -->
+    <div *ngIf="dashboardData.activeView === 'dashboard'" class="p-8">
+      <div class="max-w-6xl mx-auto">
+        <!-- Primary Agents -->
+        <div class="grid grid-cols-2 gap-8">
+          <!-- Internal Agent -->
+          <div>
+            <div class="bg-blue-600 text-white rounded-lg p-6 mb-6 relative group">
+              <button
+                (click)="onEditPrompt(dashboardData.agents.internal, true)"
+                class="absolute top-4 right-4 text-blue-200 hover:text-white transition-colors opacity-0 group-hover:opacity-100"
+                title="Edit Prompt"
+              >
+                ✏️
+              </button>
+              <div class="flex items-center">
+                <span class="text-2xl mr-3">👤</span>
+                <div>
+                  <h3 class="text-xl font-semibold">{{dashboardData.agents.internal.name}}</h3>
+                  <p class="text-blue-100">Primary Agent (Router)</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Connection Line -->
+            <div class="relative">
+              <div class="absolute left-1/2 transform -translate-x-1/2 w-0.5 h-8 bg-gray-300 -top-6"></div>
+            </div>
+            
+            <!-- Sub-agents -->
+            <div class="space-y-3">
+              <div 
+                *ngFor="let agent of dashboardData.agents.internal.subAgents; trackBy: trackByAgentId" 
+                class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow relative"
+              >
+                <div *ngIf="agent.isDefault" class="absolute -top-2 -right-2 bg-blue-500 text-white p-1 rounded-full" title="Default Agent">
+                  🛡️
+                </div>
+                <div class="flex items-center justify-between mb-2">
+                  <h4 class="font-medium text-gray-900">{{agent.name}}</h4>
+                  <div class="flex items-center gap-2">
+                    <button
+                      (click)="onEditPrompt(agent)"
+                      class="text-gray-400 hover:text-blue-600 transition-colors"
+                      title="Edit Prompt"
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      (click)="onEditAgent(agent)"
+                      class="text-gray-400 hover:text-gray-600 transition-colors"
+                      title="Edit Agent"
+                    >
+                      ⚙️
+                    </button>
+                    <button
+                      *ngIf="!agent.isDefault"
+                      (click)="onDeleteAgent(agent)"
+                      class="text-gray-400 hover:text-red-600 transition-colors"
+                      title="Delete Agent"
+                    >
+                      🗑️
+                    </button>
+                    <span class="px-2 py-1 text-xs bg-green-100 text-green-700 rounded-full">
+                      {{agent.status}}
+                    </span>
+                  </div>
+                </div>
+                <div class="text-sm text-gray-600">
+                  <p class="mb-1">Collections: {{agent.collections.length}}</p>
+                  <div class="flex flex-wrap gap-1">
+                    <span 
+                      *ngFor="let colId of agent.collections" 
+                      class="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-xs"
+                    >
+                      {{getCollectionName(colId)}}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Add Sub-Agent Button -->
+              <button
+                (click)="onOpenCreateModal('internal')"
+                class="w-full border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-blue-400 hover:bg-blue-50 transition-colors flex items-center justify-center text-gray-600 hover:text-blue-600"
+              >
+                ➕ Add Sub-Agent
+              </button>
+            </div>
+          </div>
+
+          <!-- Customer Agent -->
+          <div>
+            <div class="bg-green-600 text-white rounded-lg p-6 mb-6 relative group">
+              <button
+                (click)="onEditPrompt(dashboardData.agents.customer, true)"
+                class="absolute top-4 right-4 text-green-200 hover:text-white transition-colors opacity-0 group-hover:opacity-100"
+                title="Edit Prompt"
+              >
+                ✏️
+              </button>
+              <div class="flex items-center">
+                <span class="text-2xl mr-3">👥</span>
+                <div>
+                  <h3 class="text-xl font-semibold">{{dashboardData.agents.customer.name}}</h3>
+                  <p class="text-green-100">Primary Agent (Router)</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Connection Line -->
+            <div class="relative">
+              <div class="absolute left-1/2 transform -translate-x-1/2 w-0.5 h-8 bg-gray-300 -top-6"></div>
+            </div>
+            
+            <!-- Sub-agents -->
+            <div class="space-y-3">
+              <div 
+                *ngFor="let agent of dashboardData.agents.customer.subAgents; trackBy: trackByAgentId" 
+                class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow relative"
+              >
+                <div *ngIf="agent.isDefault" class="absolute -top-2 -right-2 bg-blue-500 text-white p-1 rounded-full" title="Default Agent">
+                  🛡️
+                </div>
+                <div class="flex items-center justify-between mb-2">
+                  <h4 class="font-medium text-gray-900">{{agent.name}}</h4>
+                  <div class="flex items-center gap-2">
+                    <button
+                      (click)="onEditPrompt(agent)"
+                      class="text-gray-400 hover:text-blue-600 transition-colors"
+                      title="Edit Prompt"
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      (click)="onEditAgent(agent)"
+                      class="text-gray-400 hover:text-gray-600 transition-colors"
+                      title="Edit Agent"
+                    >
+                      ⚙️
+                    </button>
+                    <button
+                      *ngIf="!agent.isDefault"
+                      (click)="onDeleteAgent(agent)"
+                      class="text-gray-400 hover:text-red-600 transition-colors"
+                      title="Delete Agent"
+                    >
+                      🗑️
+                    </button>
+                    <span class="px-2 py-1 text-xs bg-green-100 text-green-700 rounded-full">
+                      {{agent.status}}
+                    </span>
+                  </div>
+                </div>
+                <div class="text-sm text-gray-600">
+                  <p class="mb-1">Collections: {{agent.collections.length}}</p>
+                  <div class="flex flex-wrap gap-1">
+                    <span 
+                      *ngFor="let colId of agent.collections" 
+                      class="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-xs"
+                    >
+                      {{getCollectionName(colId)}}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Add Sub-Agent Button -->
+              <button
+                (click)="onOpenCreateModal('customer')"
+                class="w-full border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-green-400 hover:bg-green-50 transition-colors flex items-center justify-center text-gray-600 hover:text-green-600"
+              >
+                ➕ Add Sub-Agent
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Collections View -->
+    <div *ngIf="dashboardData.activeView === 'collections'" class="p-8">
+      <div class="grid gap-4 max-w-4xl">
+        <div 
+          *ngFor="let collection of dashboardData.collections; trackBy: trackByCollectionId" 
+          class="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer relative group"
+          (click)="onViewCollection(collection)"
+        >
+          <div class="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button
+              (click)="onViewCollection(collection); $event.stopPropagation()"
+              class="text-gray-400 hover:text-blue-600 transition-colors"
+              title="Upload Documents"
+            >
+              📤
+            </button>
+            <button
+              (click)="onEditCollection(collection, $event)"
+              class="text-gray-400 hover:text-blue-600 transition-colors"
+              title="Edit Collection"
+            >
+              ✏️
+            </button>
+            <button
+              (click)="onDeleteCollection(collection, $event)"
+              class="text-gray-400 hover:text-red-600 transition-colors"
+              title="Delete Collection"
+            >
+              🗑️
+            </button>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <span class="text-2xl mr-3">🗄️</span>
+              <div>
+                <h3 class="font-medium text-gray-900">{{collection.name}}</h3>
+                <p class="text-sm text-gray-600 mt-1">{{collection.detail}}</p>
+                <p class="text-xs text-gray-500 mt-1">{{collection.documents.length}} document(s)</p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">Active</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Sub-Agent Modal -->
+  <div *ngIf="modalStates.showCreateModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-lg max-w-md w-full p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-semibold text-gray-900">
+          Create New Sub-Agent
+          <span *ngIf="editingStates.newAgent.type" class="ml-2 text-sm font-normal text-gray-600">
+            for {{editingStates.newAgent.type === 'internal' ? 'Internal Agent' : 'Customer Agent'}}
+          </span>
+        </h3>
+        <button
+          (click)="onCloseModal('create')"
+          class="text-gray-400 hover:text-gray-600"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <!-- Agent Name -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Sub-Agent Name
+          </label>
+          <input
+            type="text"
+            [ngModel]="editingStates.newAgent.name"
+            (ngModelChange)="onUpdateNewAgent('name', $event)"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="e.g., HR Assistant"
+          />
+        </div>
+
+        <!-- Collection Selection -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Select Collections
+          </label>
+          <div class="border border-gray-300 rounded-lg max-h-48 overflow-y-auto">
+            <label
+              *ngFor="let collection of dashboardData.collections; trackBy: trackByCollectionId"
+              class="flex items-center p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+            >
+              <input
+                type="checkbox"
+                [checked]="isCollectionSelected(collection.id)"
+                (change)="onToggleCollection(collection.id)"
+                class="mr-3 h-4 w-4 text-blue-600 rounded focus:ring-blue-500"
+              />
+              <div class="flex-1">
+                <p class="text-sm font-medium text-gray-900">{{collection.name}}</p>
+                <p class="text-xs text-gray-600">{{collection.documents.length}} documents</p>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Actions -->
+      <div class="flex justify-end space-x-3 mt-6">
+        <button
+          (click)="onCloseModal('create')"
+          class="px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          (click)="onCreateAgent()"
+          [disabled]="!canCreateAgent()"
+          class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+        >
+          Create Agent
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Collection Modal -->
+  <div *ngIf="modalStates.showCreateCollectionModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-lg max-w-md w-full p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-semibold text-gray-900">Create New Collection</h3>
+        <button
+          (click)="onCloseModal('createCollection')"
+          class="text-gray-400 hover:text-gray-600"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Collection Name
+          </label>
+          <input
+            type="text"
+            [ngModel]="editingStates.newCollection.name"
+            (ngModelChange)="onUpdateNewCollection('name', $event)"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="e.g., Marketing Materials"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Collection Details
+          </label>
+          <textarea
+            [ngModel]="editingStates.newCollection.detail"
+            (ngModelChange)="onUpdateNewCollection('detail', $event)"
+            rows="3"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-vertical"
+            placeholder="Describe the purpose and contents of this collection..."
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="mt-4 p-4 bg-blue-50 rounded-lg">
+        <p class="text-sm text-blue-700">
+          <strong>Supported formats:</strong> PDF, DOCX, XLSX, MD, TXT
+        </p>
+      </div>
+
+      <div class="flex justify-end space-x-3 mt-6">
+        <button
+          (click)="onCloseModal('createCollection')"
+          class="px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          (click)="onCreateCollection()"
+          [disabled]="!canCreateCollection()"
+          class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+        >
+          Create Collection
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Collection Details Modal -->
+  <div *ngIf="modalStates.showCollectionDetailsModal && dashboardData.selectedCollection" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-lg max-w-4xl w-full p-6 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h3 class="text-xl font-semibold text-gray-900">{{dashboardData.selectedCollection.name}}</h3>
+          <p class="text-sm text-gray-600 mt-1">{{dashboardData.selectedCollection.detail}}</p>
+        </div>
+        <button
+          (click)="onCloseModal('collectionDetails')"
+          class="text-gray-400 hover:text-gray-600"
+        >
+          ✕
+        </button>
+      </div>
+
+      <!-- Upload Section -->
+      <div class="mb-6">
+        <label class="w-full flex items-center justify-center px-4 py-6 bg-gray-50 text-gray-600 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-colors">
+          <span class="text-2xl mr-2">📤</span>
+          <span class="text-sm">Click to upload documents (PDF, DOCX, XLSX, MD, TXT)</span>
+          <input
+            type="file"
+            class="hidden"
+            multiple
+            accept=".pdf,.docx,.xlsx,.md,.txt"
+            (change)="onFileUpload(dashboardData.selectedCollection.id, $event)"
+          />
+        </label>
+      </div>
+
+      <!-- Documents List -->
+      <div>
+        <h4 class="font-medium text-gray-900 mb-4">Documents ({{dashboardData.selectedCollection.documents.length}})</h4>
+        <div *ngIf="dashboardData.selectedCollection.documents.length === 0" class="text-center text-gray-500 py-8">
+          No documents uploaded yet
+        </div>
+        <div *ngIf="dashboardData.selectedCollection.documents.length > 0" class="grid gap-3">
+          <div 
+            *ngFor="let doc of dashboardData.selectedCollection.documents; trackBy: trackByDocumentId" 
+            class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+          >
+            <div class="flex items-center">
+              <span class="text-2xl mr-3">{{getFileIcon(doc.type)}}</span>
+              <div>
+                <p class="font-medium text-gray-900">{{doc.name}}</p>
+                <p class="text-sm text-gray-600">{{doc.type.toUpperCase()}} • {{doc.size}}</p>
+              </div>
+            </div>
+            <button
+              (click)="onDeleteDocument(dashboardData.selectedCollection.id, doc.id)"
+              class="text-gray-400 hover:text-red-600 transition-colors"
+              title="Delete Document"
+            >
+              🗑️
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end mt-6">
+        <button
+          (click)="onCloseModal('collectionDetails')"
+          class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Agent Modal -->
+  <div *ngIf="modalStates.showEditAgentModal && editingStates.editingAgent" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-lg max-w-2xl w-full p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-semibold text-gray-900">
+          Edit Sub-Agent - {{editingStates.editingAgent.name}}
+        </h3>
+        <button
+          (click)="onCloseModal('editAgent')"
+          class="text-gray-400 hover:text-gray-600"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div class="space-y-6">
+        <!-- Agent Info -->
+        <div class="bg-gray-50 rounded-lg p-4">
+          <div class="flex items-center gap-2 mb-2">
+            <span *ngIf="editingStates.editingAgent.isDefault" class="text-2xl">🛡️</span>
+            <h4 class="font-medium text-gray-900">{{editingStates.editingAgent.name}}</h4>
+          </div>
+          <p class="text-sm text-gray-600">
+            Status: <span class="text-green-600 font-medium">{{editingStates.editingAgent.status}}</span>
+          </p>
+        </div>
+
+        <!-- Collection Selection -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-3">
+            Select Collections for this Sub-Agent
+          </label>
+          <div class="border border-gray-300 rounded-lg max-h-64 overflow-y-auto">
+            <label
+              *ngFor="let collection of dashboardData.collections; trackBy: trackByCollectionId"
+              class="flex items-start p-4 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+            >
+              <input
+                type="checkbox"
+                [checked]="isCollectionSelected(collection.id)"
+                (change)="onToggleCollection(collection.id)"
+                class="mr-3 mt-1 h-4 w-4 text-blue-600 rounded focus:ring-blue-500"
+              />
+              <div class="flex-1">
+                <p class="text-sm font-medium text-gray-900">{{collection.name}}</p>
+                <p class="text-xs text-gray-600 mt-1">{{collection.detail}}</p>
+                <p class="text-xs text-gray-500 mt-1">{{collection.documents.length}} document(s)</p>
+              </div>
+            </label>
+          </div>
+          <p class="mt-2 text-sm text-gray-500">
+            Selected: {{editingStates.selectedCollections.length}} collection(s)
+          </p>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+          <button
+            (click)="onCloseModal('editAgent'); onEditPrompt(editingStates.editingAgent)"
+            class="flex items-center text-blue-600 hover:text-blue-700"
+          >
+            ✏️ Edit Prompt
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Actions -->
+      <div class="flex justify-end space-x-3 mt-6">
+        <button
+          (click)="onCloseModal('editAgent')"
+          class="px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          (click)="onSaveEditAgent()"
+          class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Agent Modal -->
+  <div *ngIf="modalStates.showDeleteModal && editingStates.agentToDelete" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-lg max-w-md w-full p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-semibold text-gray-900">Delete Sub-Agent</h3>
+        <button
+          (click)="onCloseModal('delete')"
+          class="text-gray-400 hover:text-gray-600"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div class="mb-6">
+        <p class="text-gray-700">
+          Are you sure you want to delete <strong>{{editingStates.agentToDelete.name}}</strong>?
+        </p>
+        <p class="text-sm text-gray-500 mt-2">
+          This action cannot be undone. The agent and all its configurations will be permanently removed.
+        </p>
+      </div>
+
+      <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+        <p class="text-sm text-yellow-800">
+          <strong>Warning:</strong> This sub-agent has {{editingStates.agentToDelete.collections.length}} collection(s) attached. 
+          These collections will remain available for other agents.
+        </p>
+      </div>
+
+      <!-- Modal Actions -->
+      <div class="flex justify-end space-x-3">
+        <button
+          (click)="onCloseModal('delete')"
+          class="px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          (click)="onConfirmDelete('agent')"
+          class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+        >
+          Delete Agent
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Collection Modal -->
+  <div *ngIf="modalStates.showEditCollectionModal && editingStates.editingCollection" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-lg max-w-md w-full p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-semibold text-gray-900">Edit Collection</h3>
+        <button
+          (click)="onCloseModal('editCollection')"
+          class="text-gray-400 hover:text-gray-600"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Collection Name
+          </label>
+          <input
+            type="text"
+            [ngModel]="editingStates.editingCollection.name"
+            (ngModelChange)="onUpdateEditingCollection('name', $event)"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="e.g., Marketing Materials"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Collection Details
+          </label>
+          <textarea
+            [ngModel]="editingStates.editingCollection.detail"
+            (ngModelChange)="onUpdateEditingCollection('detail', $event)"
+            rows="3"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-vertical"
+            placeholder="Describe the purpose and contents of this collection..."
+          ></textarea>
+        </div>
+
+        <div class="bg-gray-50 rounded-lg p-4">
+          <p class="text-sm text-gray-600">
+            <strong>Documents:</strong> {{editingStates.editingCollection.documents.length}} file(s)
+          </p>
+          <p class="text-xs text-gray-500 mt-1">
+            Documents in this collection will not be affected by name or detail changes.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-3 mt-6">
+        <button
+          (click)="onCloseModal('editCollection')"
+          class="px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          (click)="onSaveEditCollection()"
+          [disabled]="!canSaveEditCollection()"
+          class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+        >
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Collection Modal -->
+  <div *ngIf="modalStates.showDeleteCollectionModal && editingStates.collectionToDelete" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-lg max-w-md w-full p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-semibold text-gray-900">Delete Collection</h3>
+        <button
+          (click)="onCloseModal('deleteCollection')"
+          class="text-gray-400 hover:text-gray-600"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div class="mb-6">
+        <p class="text-gray-700">
+          Are you sure you want to delete <strong>{{editingStates.collectionToDelete.name}}</strong>?
+        </p>
+        <p class="text-sm text-gray-500 mt-2">
+          This collection contains {{editingStates.collectionToDelete.documents.length}} document(s).
+        </p>
+      </div>
+
+      <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+        <p class="text-sm text-red-800">
+          <strong>Warning:</strong> This action cannot be undone. All documents in this collection will be permanently deleted. 
+          Any agents using this collection will need to be updated.
+        </p>
+      </div>
+
+      <!-- Check if collection is being used by agents -->
+      <div *ngIf="getAgentsUsingCollection(editingStates.collectionToDelete.id).length > 0" class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+        <p class="text-sm text-yellow-800 font-medium mb-2">
+          This collection is currently used by:
+        </p>
+        <ul class="text-sm text-yellow-700 list-disc list-inside">
+          <li *ngFor="let agent of getAgentsUsingCollection(editingStates.collectionToDelete.id)">{{agent.name}}</li>
+        </ul>
+      </div>
+
+      <!-- Modal Actions -->
+      <div class="flex justify-end space-x-3">
+        <button
+          (click)="onCloseModal('deleteCollection')"
+          class="px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          (click)="onConfirmDelete('collection')"
+          class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+        >
+          Delete Collection
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Prompt Modal -->
+  <div *ngIf="modalStates.showPromptModal && dashboardData.selectedAgent" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-lg max-w-2xl w-full p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-semibold text-gray-900">
+          Edit Prompt - {{dashboardData.selectedAgent.name}}
+        </h3>
+        <button
+          (click)="onCloseModal('prompt')"
+          class="text-gray-400 hover:text-gray-600"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            {{dashboardData.selectedAgent?.isPrimary ? 'Primary Agent' : 'Sub-Agent'}} Prompt
+          </label>
+          <textarea
+            [ngModel]="editingStates.promptText"
+            (ngModelChange)="onUpdatePromptText($event)"
+            rows="8"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-vertical"
+            placeholder="Enter the prompt instructions for this agent..."
+          ></textarea>
+          <p class="mt-2 text-sm text-gray-500">
+            This prompt will guide the agent's behavior and responses when handling queries.
+          </p>
+        </div>
+      </div>
+
+      <!-- Modal Actions -->
+      <div class="flex justify-end space-x-3 mt-6">
+        <button
+          (click)="onCloseModal('prompt')"
+          class="px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          (click)="onSavePrompt()"
+          class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          Save Prompt
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
