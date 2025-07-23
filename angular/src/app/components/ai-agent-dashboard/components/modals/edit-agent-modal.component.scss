@@ -1,0 +1,139 @@
+.edit-agent-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.agent-info {
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 16px;
+  
+  .agent-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    
+    .default-icon {
+      font-size: 32px;
+    }
+    
+    .agent-name {
+      font-weight: 500;
+      color: #111827;
+      margin: 0;
+    }
+  }
+  
+  .agent-status {
+    font-size: 14px;
+    color: #4b5563;
+    margin: 0;
+    
+    .status-active {
+      color: #059669;
+      font-weight: 500;
+    }
+  }
+}
+
+.collection-section {
+  .section-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 12px;
+  }
+  
+  .collections-list {
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    max-height: 256px;
+    overflow-y: auto;
+    
+    .collection-item {
+      display: flex;
+      align-items: flex-start;
+      padding: 16px;
+      cursor: pointer;
+      border-bottom: 1px solid #f3f4f6;
+      transition: background-color 0.3s ease;
+      
+      &:hover {
+        background: #f9fafb;
+      }
+      
+      &:last-child {
+        border-bottom: none;
+      }
+      
+      .collection-checkbox {
+        margin: 4px 12px 0 0;
+        width: 16px;
+        height: 16px;
+        accent-color: #2563eb;
+        cursor: pointer;
+        
+        &:focus {
+          outline: 2px solid #3b82f6;
+          outline-offset: 2px;
+        }
+      }
+      
+      .collection-details {
+        flex: 1;
+        
+        .collection-name {
+          font-size: 14px;
+          font-weight: 500;
+          color: #111827;
+          margin: 0 0 4px 0;
+        }
+        
+        .collection-detail {
+          font-size: 12px;
+          color: #4b5563;
+          margin: 4px 0;
+          line-height: 1.4;
+        }
+        
+        .collection-count {
+          font-size: 12px;
+          color: #6b7280;
+          margin: 4px 0 0 0;
+        }
+      }
+    }
+  }
+  
+  .selection-summary {
+    margin-top: 8px;
+    font-size: 14px;
+    color: #6b7280;
+  }
+}
+
+.quick-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+  
+  .edit-prompt-btn {
+    display: flex;
+    align-items: center;
+    color: #2563eb;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    font-size: 14px;
+    
+    &:hover {
+      color: #1d4ed8;
+    }
+  }
+}

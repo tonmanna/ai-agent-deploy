@@ -42,6 +42,7 @@ import { AgentFormComponent } from './components/forms/agent-form.component';
     AgentFormComponent
   ],
   templateUrl: './ai-agent-dashboard-presentation-v2.component.html',
+  styleUrls: ['./ai-agent-dashboard-presentation-v2.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AiAgentDashboardPresentationV2Component {
@@ -64,6 +65,14 @@ export class AiAgentDashboardPresentationV2Component {
   @Output() saveEditAgent = new EventEmitter<void>();
   @Output() confirmDelete = new EventEmitter<'agent' | 'collection'>();
   @Output() updateNewAgent = new EventEmitter<{field: keyof NewAgent, value: any}>();
+  @Output() updateNewCollection = new EventEmitter<Partial<NewCollection>>();
+  @Output() updateEditingCollection = new EventEmitter<Partial<Collection>>();
+  @Output() fileUpload = new EventEmitter<{collectionId: number, files: FileList}>();
+  @Output() deleteDocument = new EventEmitter<{collectionId: number, documentId: string}>();
+  @Output() saveEditCollection = new EventEmitter<void>();
+  @Output() savePrompt = new EventEmitter<void>();
+  @Output() updatePromptText = new EventEmitter<string>();
+  @Output() clearCollectionSelection = new EventEmitter<void>();
 
   trackByAgentId(index: number, agent: Agent): string | number {
     return agent.id;
@@ -108,10 +117,7 @@ export class AiAgentDashboardPresentationV2Component {
   }
 
   onClearCollectionSelection(): void {
-    // Emit toggle for each selected collection to clear them
-    this.editingStates.selectedCollections.forEach(id => {
-      this.toggleCollection.emit(id);
-    });
+    this.clearCollectionSelection.emit();
   }
 
   onDeleteAgent(agent: Agent): void {
@@ -122,11 +128,18 @@ export class AiAgentDashboardPresentationV2Component {
     this.editAgent.emit(agent);
   }
 
-  onEditPrompt(agent: Agent | PrimaryAgent, isPrimary = false): void {
-    const agentData = 'subAgents' in agent ? 
-      { ...agent, collections: [], status: 'active', isDefault: false, isPrimary: true } as Agent :
-      agent as Agent;
-    this.editPrompt.emit({ agent: agentData, isPrimary });
+  onEditPrompt(data: { agent: Agent, isPrimary?: boolean } | Agent | PrimaryAgent, isPrimary = false): void {
+    if ('agent' in data) {
+      // Called from agent-card component
+      this.editPrompt.emit(data);
+    } else {
+      // Called from primary agent buttons
+      const agent = data as Agent | PrimaryAgent;
+      const agentData = 'subAgents' in agent ? 
+        { ...agent, collections: [], status: 'active', isDefault: false, isPrimary: true } as Agent :
+        agent as Agent;
+      this.editPrompt.emit({ agent: agentData, isPrimary });
+    }
   }
 
   onViewCollection(collection: Collection): void {
@@ -155,5 +168,87 @@ export class AiAgentDashboardPresentationV2Component {
 
   onUpdateNewAgent(field: keyof NewAgent, value: any): void {
     this.updateNewAgent.emit({ field, value });
+  }
+
+  onCreateCollection(): void {
+    this.createCollection.emit();
+  }
+
+  canCreateCollection(): boolean {
+    return !!(this.editingStates.newCollection.name && this.editingStates.newCollection.detail);
+  }
+
+  onUpdateNewCollection(updates: Partial<NewCollection>): void {
+    this.updateNewCollection.emit(updates);
+  }
+
+  onUpdateEditingCollection(updates: Partial<Collection>): void {
+    this.updateEditingCollection.emit(updates);
+  }
+
+  canSaveEditCollection(): boolean {
+    return !!(this.editingStates.editingCollection?.name && this.editingStates.editingCollection?.detail);
+  }
+
+  onSaveEditCollection(): void {
+    this.saveEditCollection.emit();
+  }
+
+  onFileUpload(collectionId: number, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.fileUpload.emit({ collectionId, files: input.files });
+    }
+  }
+
+  onDeleteDocument(collectionId: number, documentId: string): void {
+    this.deleteDocument.emit({ collectionId, documentId });
+  }
+
+  trackByDocumentId(index: number, document: Document): string {
+    return document.id;
+  }
+
+  getFileIcon(type: string): string {
+    const icons: { [key: string]: string } = {
+      pdf: '📄',
+      docx: '📝',
+      xlsx: '📊',
+      md: '📋',
+      txt: '📃'
+    };
+    return icons[type.toLowerCase()] || '📄';
+  }
+
+  getAgentsUsingCollection(collectionId: number): Agent[] {
+    const agents: Agent[] = [];
+    
+    // Check internal sub-agents
+    this.dashboardData.agents.internal.subAgents.forEach(agent => {
+      if (agent.collections.includes(collectionId)) {
+        agents.push(agent);
+      }
+    });
+    
+    // Check customer sub-agents
+    this.dashboardData.agents.customer.subAgents.forEach(agent => {
+      if (agent.collections.includes(collectionId)) {
+        agents.push(agent);
+      }
+    });
+    
+    return agents;
+  }
+
+  getAgentNamesUsingCollection(collectionId: number): string[] {
+    return this.getAgentsUsingCollection(collectionId).map(agent => agent.name);
+  }
+
+  onSavePrompt(): void {
+    this.savePrompt.emit();
+  }
+
+  onUpdatePromptText(text: string): void {
+    this.updatePromptText.emit(text);
   }
 }

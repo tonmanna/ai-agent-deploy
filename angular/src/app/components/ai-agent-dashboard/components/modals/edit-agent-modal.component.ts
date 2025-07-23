@@ -8,6 +8,7 @@ import { ModalBaseComponent } from '../shared/modal-base.component';
   standalone: true,
   imports: [CommonModule, ModalBaseComponent],
   templateUrl: './edit-agent-modal.component.html',
+  styleUrls: ['./edit-agent-modal.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EditAgentModalComponent {

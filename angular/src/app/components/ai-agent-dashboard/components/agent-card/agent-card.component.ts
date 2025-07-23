@@ -16,7 +16,7 @@ export class AgentCardComponent {
 
   @Output() edit = new EventEmitter<Agent>();
   @Output() delete = new EventEmitter<Agent>();
-  @Output() editPrompt = new EventEmitter<Agent>();
+  @Output() editPrompt = new EventEmitter<{ agent: Agent, isPrimary?: boolean }>();
 
   trackByCollectionId(index: number, collectionId: number): number {
     return collectionId;
@@ -45,6 +45,6 @@ export class AgentCardComponent {
   }
 
   onEditPrompt(): void {
-    this.editPrompt.emit(this.agent);
+    this.editPrompt.emit({ agent: this.agent, isPrimary: false });
   }
 }

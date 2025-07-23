@@ -7,6 +7,7 @@ import { ModalBaseComponent } from '../shared/modal-base.component';
   standalone: true,
   imports: [CommonModule, ModalBaseComponent],
   templateUrl: './delete-confirmation-modal.component.html',
+  styleUrls: ['./delete-confirmation-modal.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DeleteConfirmationModalComponent {

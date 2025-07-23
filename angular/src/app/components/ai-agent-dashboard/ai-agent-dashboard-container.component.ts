@@ -331,4 +331,8 @@ export class AiAgentDashboardContainerComponent implements OnInit {
   onUpdatePromptText(text: string): void {
     this.editingStates.promptText = text;
   }
+
+  onClearCollectionSelection(): void {
+    this.editingStates.selectedCollections = [];
+  }
 }

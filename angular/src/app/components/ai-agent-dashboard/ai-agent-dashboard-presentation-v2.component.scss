@@ -1,0 +1,438 @@
+// Dashboard Layout
+.dashboard-container {
+  height: 100vh;
+  background: #f9fafb;
+  display: flex;
+  flex-direction: column;
+}
+
+// Navigation
+.nav-container {
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  
+  .nav-content {
+    padding: 16px 32px;
+    
+    .nav-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 16px;
+    }
+    
+    .nav-buttons {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      
+      .nav-separator {
+        width: 16px;
+        height: 16px;
+        color: #9ca3af;
+      }
+    }
+  }
+}
+
+// Page Header
+.page-header {
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 24px 32px;
+  
+  .header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    
+    .page-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: #111827;
+    }
+    
+    .create-collection-btn {
+      display: flex;
+      align-items: center;
+      padding: 8px 16px;
+      background: #2563eb;
+      color: white;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      
+      &:hover {
+        background: #1d4ed8;
+      }
+    }
+  }
+}
+
+// Main Content
+.main-content {
+  flex: 1;
+  overflow: auto;
+  padding: 32px;
+}
+
+// Agent Organization
+.agent-organization {
+  max-width: 1152px;
+  margin: 0 auto;
+  
+  .agents-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    
+    @media (max-width: 1024px) {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  .agent-section {
+    .primary-agent {
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 24px;
+      position: relative;
+      
+      &.internal {
+        background: #2563eb;
+        color: white;
+      }
+      
+      &.customer {
+        background: #059669;
+        color: white;
+      }
+      
+      .edit-prompt-btn {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        
+        &.internal {
+          color: #bfdbfe;
+          
+          &:hover {
+            color: white;
+          }
+        }
+        
+        &.customer {
+          color: #a7f3d0;
+          
+          &:hover {
+            color: white;
+          }
+        }
+      }
+      
+      &:hover .edit-prompt-btn {
+        opacity: 1;
+      }
+      
+      .agent-info {
+        display: flex;
+        align-items: center;
+        
+        .agent-emoji {
+          font-size: 32px;
+          margin-right: 12px;
+        }
+        
+        .agent-details {
+          .agent-name {
+            font-size: 20px;
+            font-weight: 600;
+          }
+          
+          .agent-role {
+            &.internal {
+              color: #bfdbfe;
+            }
+            
+            &.customer {
+              color: #a7f3d0;
+            }
+          }
+        }
+      }
+    }
+    
+    .connector {
+      position: relative;
+      margin-bottom: 16px;
+      
+      .connector-line {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 2px;
+        height: 32px;
+        background: #d1d5db;
+      }
+    }
+    
+    .sub-agents {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      
+      .add-agent-btn {
+        width: 100%;
+        border: 2px dashed #d1d5db;
+        border-radius: 8px;
+        padding: 16px;
+        background: transparent;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6b7280;
+        transition: all 0.3s ease;
+        
+        &:hover {
+          border-color: #3b82f6;
+          background: #eff6ff;
+          color: #2563eb;
+        }
+        
+        &.internal:hover {
+          border-color: #3b82f6;
+          background: #eff6ff;
+        }
+        
+        &.customer:hover {
+          border-color: #059669;
+          background: #ecfdf5;
+        }
+      }
+    }
+  }
+}
+
+// Collections Grid
+.collections-grid {
+  display: grid;
+  gap: 16px;
+  max-width: 768px;
+}
+
+// Modal Form Styles
+.collection-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-field {
+  .field-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 4px;
+  }
+  
+  .form-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    
+    &:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    &::placeholder {
+      color: #9ca3af;
+    }
+  }
+  
+  .form-textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    resize: vertical;
+    min-height: 80px;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    
+    &:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    &::placeholder {
+      color: #9ca3af;
+    }
+  }
+  
+  .field-description {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 4px;
+  }
+}
+
+.info-box {
+  background: #f0f9ff;
+  border: 1px solid #e0f2fe;
+  border-radius: 8px;
+  padding: 12px;
+  
+  .info-text {
+    font-size: 14px;
+    color: #0369a1;
+    margin: 0;
+    
+    strong {
+      font-weight: 600;
+    }
+  }
+  
+  .info-subtext {
+    font-size: 12px;
+    color: #0284c7;
+    margin: 4px 0 0 0;
+  }
+}
+
+// Collection Details Modal
+.collection-details {
+  .collection-description {
+    color: #4b5563;
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+  
+  .upload-section {
+    margin-bottom: 24px;
+    
+    .upload-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px;
+      border: 2px dashed #d1d5db;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        border-color: #3b82f6;
+        background: #f8fafc;
+      }
+      
+      .upload-icon {
+        font-size: 24px;
+        margin-bottom: 8px;
+      }
+      
+      .upload-text {
+        color: #6b7280;
+        font-size: 14px;
+        text-align: center;
+      }
+      
+      .hidden-input {
+        display: none;
+      }
+    }
+  }
+  
+  .documents-section {
+    .documents-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 12px;
+    }
+    
+    .empty-documents {
+      text-align: center;
+      color: #6b7280;
+      padding: 24px;
+      font-style: italic;
+    }
+    
+    .documents-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      
+      .document-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px;
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        
+        .document-info {
+          display: flex;
+          align-items: center;
+          
+          .document-icon {
+            font-size: 16px;
+            margin-right: 8px;
+          }
+          
+          .document-details {
+            .document-name {
+              font-size: 14px;
+              font-weight: 500;
+              color: #111827;
+              margin: 0;
+            }
+            
+            .document-meta {
+              font-size: 12px;
+              color: #6b7280;
+              margin: 2px 0 0 0;
+            }
+          }
+        }
+        
+        .delete-document-btn {
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          padding: 4px;
+          color: #6b7280;
+          transition: color 0.3s ease;
+          
+          &:hover {
+            color: #dc2626;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Prompt Form
+.prompt-form {
+  .form-field {
+    .form-textarea {
+      min-height: 200px;
+    }
+  }
+}

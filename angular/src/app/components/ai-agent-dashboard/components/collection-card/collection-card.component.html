@@ -1,48 +1,45 @@
-<div 
-  class="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-all duration-300 cursor-pointer relative group"
-  (click)="onView()"
->
+<div class="collection-card" (click)="onView()">
   <!-- Action Buttons -->
-  <div class="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+  <div class="action-buttons">
     <button
       (click)="onView(); $event.stopPropagation()"
-      class="text-gray-400 hover:text-blue-600 transition-colors p-1 rounded hover:bg-blue-50"
+      class="action-btn upload-btn"
       title="Upload Documents"
     >
-      <span class="text-sm">📤</span>
+      <span class="btn-icon">📤</span>
     </button>
     <button
       (click)="onEdit($event)"
-      class="text-gray-400 hover:text-blue-600 transition-colors p-1 rounded hover:bg-blue-50"
+      class="action-btn edit-btn"
       title="Edit Collection"
     >
-      <span class="text-sm">✏️</span>
+      <span class="btn-icon">✏️</span>
     </button>
     <button
       (click)="onDelete($event)"
-      class="text-gray-400 hover:text-red-600 transition-colors p-1 rounded hover:bg-red-50"
+      class="action-btn delete-btn"
       title="Delete Collection"
     >
-      <span class="text-sm">🗑️</span>
+      <span class="btn-icon">🗑️</span>
     </button>
   </div>
   
   <!-- Collection Content -->
-  <div class="flex items-center justify-between">
-    <div class="flex items-center flex-1 min-w-0">
-      <span class="text-2xl mr-3 flex-shrink-0">🗄️</span>
-      <div class="flex-1 min-w-0">
-        <h3 class="font-medium text-gray-900 truncate">{{collection.name}}</h3>
-        <p class="text-sm text-gray-600 mt-1 line-clamp-2">{{collection.detail}}</p>
+  <div class="collection-content">
+    <div class="collection-main">
+      <span class="collection-icon">🗄️</span>
+      <div class="collection-info">
+        <h3 class="collection-name">{{collection.name}}</h3>
+        <p class="collection-detail">{{collection.detail}}</p>
         
         <!-- Collection Stats -->
-        <div class="flex items-center gap-4 mt-2">
-          <p class="text-xs text-gray-500 flex items-center">
-            <span class="mr-1">📄</span>
+        <div class="collection-stats">
+          <p class="stat">
+            <span class="stat-icon">📄</span>
             {{collection.documents.length}} document(s)
           </p>
-          <p class="text-xs text-gray-500 flex items-center">
-            <span class="mr-1">💾</span>
+          <p class="stat">
+            <span class="stat-icon">💾</span>
             {{getTotalSize()}}
           </p>
         </div>
@@ -50,20 +47,20 @@
     </div>
     
     <!-- Status Badge -->
-    <div class="flex items-center space-x-2 flex-shrink-0 ml-4">
-      <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
+    <div class="status-section">
+      <span class="status-badge">
         Active
       </span>
     </div>
   </div>
   
   <!-- Document Types Preview -->
-  <div class="mt-3 flex items-center gap-2" *ngIf="collection.documents.length > 0">
-    <span class="text-xs text-gray-400">Types:</span>
-    <div class="flex gap-1">
+  <div class="document-types" *ngIf="collection.documents.length > 0">
+    <span class="types-label">Types:</span>
+    <div class="types-list">
       <span 
         *ngFor="let type of getUniqueDocumentTypes(); trackBy: trackByType"
-        class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs font-mono uppercase"
+        class="type-badge"
       >
         {{type}}
       </span>
@@ -71,7 +68,7 @@
   </div>
   
   <!-- Empty State -->
-  <div *ngIf="collection.documents.length === 0" class="mt-3 text-center py-2">
-    <p class="text-xs text-gray-400 italic">No documents uploaded yet</p>
+  <div *ngIf="collection.documents.length === 0" class="empty-state">
+    <p class="empty-message">No documents uploaded yet</p>
   </div>
 </div>

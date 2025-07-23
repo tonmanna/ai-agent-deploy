@@ -34,12 +34,7 @@ export class ModalBaseComponent {
   }
 
   get primaryActionClass(): string {
-    const baseClass = 'px-4 py-2 rounded-lg transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed';
-    const typeClasses = {
-      primary: 'bg-blue-600 text-white hover:bg-blue-700',
-      danger: 'bg-red-600 text-white hover:bg-red-700'
-    };
-    return `${baseClass} ${typeClasses[this.primaryActionType]}`;
+    return `primary-button ${this.primaryActionType}`;
   }
 
   onClose(): void {

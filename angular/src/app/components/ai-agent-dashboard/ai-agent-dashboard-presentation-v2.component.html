@@ -1,16 +1,16 @@
-<div class="h-screen bg-gray-50 flex flex-col">
+<div class="dashboard-container">
   <!-- Top Navigation -->
-  <div class="bg-white border-b border-gray-200">
-    <div class="px-8 py-4">
-      <h1 class="text-2xl font-bold text-gray-900 mb-4">AI Agent Admin</h1>
-      <nav class="flex items-center space-x-2">
+  <div class="nav-container">
+    <div class="nav-content">
+      <h1 class="nav-title">AI Agent Admin</h1>
+      <nav class="nav-buttons">
         <button
           (click)="onViewChange('dashboard')"
           [class]="getNavButtonClass('dashboard')"
         >
           🌿 AI Agents
         </button>
-        <span class="w-4 h-4 text-gray-400">▶</span>
+        <span class="nav-separator">▶</span>
         <button
           (click)="onViewChange('collections')"
           [class]="getNavButtonClass('collections')"
@@ -22,17 +22,17 @@
   </div>
 
   <!-- Main Content -->
-  <div class="flex-1 overflow-auto">
+  <div class="main-content">
     <!-- Header -->
-    <div class="bg-white border-b border-gray-200 px-8 py-6">
-      <div class="flex items-center justify-between">
-        <h2 class="text-2xl font-semibold text-gray-900">
+    <div class="page-header">
+      <div class="header-content">
+        <h2 class="page-title">
           {{getPageTitle()}}
         </h2>
         <button
           *ngIf="dashboardData.activeView === 'collections'"
           (click)="modalStates.showCreateCollectionModal = true"
-          class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          class="create-collection-btn"
         >
           ➕ Create Collection
         </button>
@@ -40,33 +40,32 @@
     </div>
 
     <!-- Dashboard View - Organization Chart -->
-    <div *ngIf="dashboardData.activeView === 'dashboard'" class="p-8">
-      <div class="max-w-6xl mx-auto">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div *ngIf="dashboardData.activeView === 'dashboard'" class="agent-organization">
+      <div class="agents-grid">
           <!-- Internal Agent Section -->
-          <div>
-            <div class="bg-blue-600 text-white rounded-lg p-6 mb-6 relative group">
+          <div class="agent-section">
+            <div class="primary-agent internal">
               <button
                 (click)="onEditPrompt(dashboardData.agents.internal, true)"
-                class="absolute top-4 right-4 text-blue-200 hover:text-white transition-colors opacity-0 group-hover:opacity-100"
+                class="edit-prompt-btn internal"
                 title="Edit Prompt"
               >
                 ✏️
               </button>
-              <div class="flex items-center">
-                <span class="text-2xl mr-3">👤</span>
-                <div>
-                  <h3 class="text-xl font-semibold">{{dashboardData.agents.internal.name}}</h3>
-                  <p class="text-blue-100">Primary Agent (Router)</p>
+              <div class="agent-info">
+                <span class="agent-emoji">👤</span>
+                <div class="agent-details">
+                  <h3 class="agent-name">{{dashboardData.agents.internal.name}}</h3>
+                  <p class="agent-role internal">Primary Agent (Router)</p>
                 </div>
               </div>
             </div>
             
-            <div class="relative mb-4">
-              <div class="absolute left-1/2 transform -translate-x-1/2 w-0.5 h-8 bg-gray-300"></div>
+            <div class="connector">
+              <div class="connector-line"></div>
             </div>
             
-            <div class="space-y-3">
+            <div class="sub-agents">
               <app-agent-card
                 *ngFor="let agent of dashboardData.agents.internal.subAgents; trackBy: trackByAgentId"
                 [agent]="agent"
@@ -78,7 +77,7 @@
               
               <button
                 (click)="onOpenCreateModal('internal')"
-                class="w-full border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-blue-400 hover:bg-blue-50 transition-colors flex items-center justify-center text-gray-600 hover:text-blue-600"
+                class="add-agent-btn internal"
               >
                 ➕ Add Sub-Agent
               </button>
@@ -86,29 +85,29 @@
           </div>
 
           <!-- Customer Agent Section -->
-          <div>
-            <div class="bg-green-600 text-white rounded-lg p-6 mb-6 relative group">
+          <div class="agent-section">
+            <div class="primary-agent customer">
               <button
                 (click)="onEditPrompt(dashboardData.agents.customer, true)"
-                class="absolute top-4 right-4 text-green-200 hover:text-white transition-colors opacity-0 group-hover:opacity-100"
+                class="edit-prompt-btn customer"
                 title="Edit Prompt"
               >
                 ✏️
               </button>
-              <div class="flex items-center">
-                <span class="text-2xl mr-3">👥</span>
-                <div>
-                  <h3 class="text-xl font-semibold">{{dashboardData.agents.customer.name}}</h3>
-                  <p class="text-green-100">Primary Agent (Router)</p>
+              <div class="agent-info">
+                <span class="agent-emoji">👥</span>
+                <div class="agent-details">
+                  <h3 class="agent-name">{{dashboardData.agents.customer.name}}</h3>
+                  <p class="agent-role customer">Primary Agent (Router)</p>
                 </div>
               </div>
             </div>
             
-            <div class="relative mb-4">
-              <div class="absolute left-1/2 transform -translate-x-1/2 w-0.5 h-8 bg-gray-300"></div>
+            <div class="connector">
+              <div class="connector-line"></div>
             </div>
             
-            <div class="space-y-3">
+            <div class="sub-agents">
               <app-agent-card
                 *ngFor="let agent of dashboardData.agents.customer.subAgents; trackBy: trackByAgentId"
                 [agent]="agent"
@@ -120,7 +119,7 @@
               
               <button
                 (click)="onOpenCreateModal('customer')"
-                class="w-full border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-green-400 hover:bg-green-50 transition-colors flex items-center justify-center text-gray-600 hover:text-green-600"
+                class="add-agent-btn customer"
               >
                 ➕ Add Sub-Agent
               </button>
@@ -128,11 +127,10 @@
           </div>
         </div>
       </div>
-    </div>
 
     <!-- Collections View -->
-    <div *ngIf="dashboardData.activeView === 'collections'" class="p-8">
-      <div class="grid gap-4 max-w-4xl">
+    <div *ngIf="dashboardData.activeView === 'collections'">
+      <div class="collections-grid">
         <app-collection-card
           *ngFor="let collection of dashboardData.collections; trackBy: trackByCollectionId"
           [collection]="collection"
@@ -190,5 +188,188 @@
     (confirm)="onConfirmDelete('agent')"
   ></app-delete-confirmation-modal>
 
-  <!-- Other modals would go here... -->
+  <!-- Create Collection Modal -->
+  <app-modal-base
+    *ngIf="modalStates.showCreateCollectionModal"
+    title="Create New Collection"
+    size="md"
+    primaryActionText="Create Collection"
+    [primaryActionDisabled]="!canCreateCollection()"
+    (close)="onCloseModal('createCollection')"
+    (cancel)="onCloseModal('createCollection')"
+    (primaryAction)="onCreateCollection()"
+  >
+    <div class="collection-form">
+      <div class="form-field">
+        <label class="field-label">Collection Name</label>
+        <input
+          type="text"
+          [ngModel]="editingStates.newCollection.name"
+          (ngModelChange)="onUpdateNewCollection({name: $event})"
+          class="form-input"
+          placeholder="e.g., Marketing Materials"
+        />
+      </div>
+      <div class="form-field">
+        <label class="field-label">Collection Details</label>
+        <textarea
+          [ngModel]="editingStates.newCollection.detail"
+          (ngModelChange)="onUpdateNewCollection({detail: $event})"
+          rows="3"
+          class="form-textarea"
+          placeholder="Describe the purpose and contents of this collection..."
+        ></textarea>
+      </div>
+      <div class="info-box">
+        <p class="info-text">
+          <strong>Supported formats:</strong> PDF, DOCX, XLSX, MD, TXT
+        </p>
+      </div>
+    </div>
+  </app-modal-base>
+
+  <!-- Collection Details Modal -->
+  <app-modal-base
+    *ngIf="modalStates.showCollectionDetailsModal && dashboardData.selectedCollection"
+    [title]="dashboardData.selectedCollection.name"
+    size="xl"
+    [showPrimaryAction]="false"
+    cancelText="Close"
+    (close)="onCloseModal('collectionDetails')"
+    (cancel)="onCloseModal('collectionDetails')"
+  >
+    <div class="collection-details">
+      <p class="collection-description">{{dashboardData.selectedCollection.detail}}</p>
+      
+      <!-- Upload Section -->
+      <div class="upload-section">
+        <label class="upload-area">
+          <span class="upload-icon">📤</span>
+          <span class="upload-text">Click to upload documents (PDF, DOCX, XLSX, MD, TXT)</span>
+          <input
+            type="file"
+            class="hidden-input"
+            multiple
+            accept=".pdf,.docx,.xlsx,.md,.txt"
+            (change)="onFileUpload(dashboardData.selectedCollection.id, $event)"
+          />
+        </label>
+      </div>
+
+      <!-- Documents List -->
+      <div class="documents-section">
+        <h4 class="documents-title">Documents ({{dashboardData.selectedCollection.documents.length}})</h4>
+        <div *ngIf="dashboardData.selectedCollection.documents.length === 0" class="empty-documents">
+          No documents uploaded yet
+        </div>
+        <div *ngIf="dashboardData.selectedCollection.documents.length > 0" class="documents-grid">
+          <div 
+            *ngFor="let doc of dashboardData.selectedCollection.documents; trackBy: trackByDocumentId" 
+            class="document-item"
+          >
+            <div class="document-info">
+              <span class="document-icon">{{getFileIcon(doc.type)}}</span>
+              <div class="document-details">
+                <p class="document-name">{{doc.name}}</p>
+                <p class="document-meta">{{doc.type.toUpperCase()}} • {{doc.size}}</p>
+              </div>
+            </div>
+            <button
+              (click)="onDeleteDocument(dashboardData.selectedCollection.id, doc.id)"
+              class="delete-document-btn"
+              title="Delete Document"
+            >
+              🗑️
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </app-modal-base>
+
+  <!-- Edit Collection Modal -->
+  <app-modal-base
+    *ngIf="modalStates.showEditCollectionModal && editingStates.editingCollection"
+    title="Edit Collection"
+    size="md"
+    primaryActionText="Save Changes"
+    [primaryActionDisabled]="!canSaveEditCollection()"
+    (close)="onCloseModal('editCollection')"
+    (cancel)="onCloseModal('editCollection')"
+    (primaryAction)="onSaveEditCollection()"
+  >
+    <div class="collection-form">
+      <div class="form-field">
+        <label class="field-label">Collection Name</label>
+        <input
+          type="text"
+          [ngModel]="editingStates.editingCollection.name"
+          (ngModelChange)="onUpdateEditingCollection({name: $event})"
+          class="form-input"
+          placeholder="e.g., Marketing Materials"
+        />
+      </div>
+      <div class="form-field">
+        <label class="field-label">Collection Details</label>
+        <textarea
+          [ngModel]="editingStates.editingCollection.detail"
+          (ngModelChange)="onUpdateEditingCollection({detail: $event})"
+          rows="3"
+          class="form-textarea"
+          placeholder="Describe the purpose and contents of this collection..."
+        ></textarea>
+      </div>
+      <div class="info-box">
+        <p class="info-text">
+          <strong>Documents:</strong> {{editingStates.editingCollection.documents.length}} file(s)
+        </p>
+        <p class="info-subtext">
+          Documents in this collection will not be affected by name or detail changes.
+        </p>
+      </div>
+    </div>
+  </app-modal-base>
+
+  <!-- Delete Collection Modal -->
+  <app-delete-confirmation-modal
+    *ngIf="modalStates.showDeleteCollectionModal && editingStates.collectionToDelete"
+    title="Delete Collection"
+    [itemName]="editingStates.collectionToDelete.name"
+    [description]="'This collection contains ' + editingStates.collectionToDelete.documents.length + ' document(s).'"
+    warningMessage="This action cannot be undone. All documents in this collection will be permanently deleted. Any agents using this collection will need to be updated."
+    [dependencies]="getAgentNamesUsingCollection(editingStates.collectionToDelete.id)"
+    dependencyTitle="This collection is currently used by"
+    confirmText="Delete Collection"
+    (close)="onCloseModal('deleteCollection')"
+    (confirm)="onConfirmDelete('collection')"
+  ></app-delete-confirmation-modal>
+
+  <!-- Edit Prompt Modal -->
+  <app-modal-base
+    *ngIf="modalStates.showPromptModal && dashboardData.selectedAgent"
+    [title]="'Edit Prompt - ' + dashboardData.selectedAgent.name"
+    size="lg"
+    primaryActionText="Save Prompt"
+    (close)="onCloseModal('prompt')"
+    (cancel)="onCloseModal('prompt')"
+    (primaryAction)="onSavePrompt()"
+  >
+    <div class="prompt-form">
+      <div class="form-field">
+        <label class="field-label">
+          {{dashboardData.selectedAgent.isPrimary ? 'Primary Agent' : 'Sub-Agent'}} Prompt
+        </label>
+        <textarea
+          [ngModel]="editingStates.promptText"
+          (ngModelChange)="onUpdatePromptText($event)"
+          rows="8"
+          class="form-textarea"
+          placeholder="Enter the prompt instructions for this agent..."
+        ></textarea>
+        <p class="field-description">
+          This prompt will guide the agent's behavior and responses when handling queries.
+        </p>
+      </div>
+    </div>
+  </app-modal-base>
 </div>

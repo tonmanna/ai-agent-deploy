@@ -6,52 +6,49 @@
   (cancel)="onClose()"
   (primaryAction)="onSave()"
 >
-  <div class="space-y-6">
+  <div class="edit-agent-content">
     <!-- Agent Info -->
-    <div class="bg-gray-50 rounded-lg p-4">
-      <div class="flex items-center gap-2 mb-2">
-        <span *ngIf="agent.isDefault" class="text-2xl">🛡️</span>
-        <h4 class="font-medium text-gray-900">{{agent.name}}</h4>
+    <div class="agent-info">
+      <div class="agent-header">
+        <span *ngIf="agent.isDefault" class="default-icon">🛡️</span>
+        <h4 class="agent-name">{{agent.name}}</h4>
       </div>
-      <p class="text-sm text-gray-600">
-        Status: <span class="text-green-600 font-medium">{{agent.status}}</span>
+      <p class="agent-status">
+        Status: <span class="status-active">{{agent.status}}</span>
       </p>
     </div>
 
     <!-- Collection Selection -->
-    <div>
-      <label class="block text-sm font-medium text-gray-700 mb-3">
+    <div class="collection-section">
+      <label class="section-label">
         Select Collections for this Sub-Agent
       </label>
-      <div class="border border-gray-300 rounded-lg max-h-64 overflow-y-auto">
+      <div class="collections-list">
         <label
           *ngFor="let collection of collections; trackBy: trackByCollectionId"
-          class="flex items-start p-4 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+          class="collection-item"
         >
           <input
             type="checkbox"
             [checked]="isCollectionSelected(collection.id)"
             (change)="onToggleCollection(collection.id)"
-            class="mr-3 mt-1 h-4 w-4 text-blue-600 rounded focus:ring-blue-500"
+            class="collection-checkbox"
           />
-          <div class="flex-1">
-            <p class="text-sm font-medium text-gray-900">{{collection.name}}</p>
-            <p class="text-xs text-gray-600 mt-1">{{collection.detail}}</p>
-            <p class="text-xs text-gray-500 mt-1">{{collection.documents.length}} document(s)</p>
+          <div class="collection-details">
+            <p class="collection-name">{{collection.name}}</p>
+            <p class="collection-detail">{{collection.detail}}</p>
+            <p class="collection-count">{{collection.documents.length}} document(s)</p>
           </div>
         </label>
       </div>
-      <p class="mt-2 text-sm text-gray-500">
+      <p class="selection-summary">
         Selected: {{selectedCollections.length}} collection(s)
       </p>
     </div>
 
     <!-- Quick Actions -->
-    <div class="flex items-center justify-between pt-4 border-t border-gray-200">
-      <button
-        (click)="onEditPrompt()"
-        class="flex items-center text-blue-600 hover:text-blue-700 transition-colors"
-      >
+    <div class="quick-actions">
+      <button (click)="onEditPrompt()" class="edit-prompt-btn">
         ✏️ Edit Prompt
       </button>
     </div>
